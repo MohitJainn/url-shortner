@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Centered Input</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class=" bg-slate-900 my-8">
+<label class=" font-semibold text-3xl text-white flex items-center justify-center p-2 rounded-lg w-auto">Url shortner</label>
+  <div class="flex items-center justify-center gap-2 ">
+    <input
+      id="longUrl"
+      type="text"
+      placeholder="Enter URL"
+      class="rounded-lg border p-2 w-64"
+    >
+    <button onclick="shortUrl()" class="border p-2 text-white bg-blue-600 rounded-lg">
+      Enter
+    </button>
+  </div>
+  <div id="result" class=" flex items-center justify-center  my-4  text-white border l-1/2 r-1/2 rounded-lg bg-indigo-600"></div>
+ <script>
+   async function shortUrl(){
+        const longUrl=document.getElementById("longUrl").value;
+        if(!longUrl){
+          alert("please enter a url");
+          return;
+        }
+
+        const response= await fetch("/short",{
+          method:"POST",
+          headers:{
+            "Content-Type": "application/json"
+          },
+          body:JSON.stringify({longUrl:longUrl})
+        });
+
+        const data=await response.json();
+        document.getElementById("result").innerHTML=`
+        <p>Short URL:</p>
+        <a href="${data.shortUrl}" target="_blank">
+          ${data.shortUrl}
+          </a>
+    `;
+  }
+ </script>
+</body>
+</html>
