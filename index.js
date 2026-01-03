@@ -17,6 +17,9 @@ mongoose.connect(process.env.MONGO_URL)
 
 app.post("/short", async function(req,res){
     const {longUrl}=req.body;
+    if (!longUrl.startsWith("http://") && !longUrl.startsWith("https://")) {
+    longUrl = "https://" + longUrl;
+  }
    shortCode=nanoid(6);
    await Url.create({
     shortCode,
