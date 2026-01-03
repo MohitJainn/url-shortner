@@ -15,37 +15,42 @@ mongoose.connect(process.env.MONGO_URL)
 .then(()=> console.log("db connected"))
 .catch(err=>console.log(err));
 
-app.post("/short", async function(req,res){
-     try{ 
-      const {longUrl}=req.body;
-    if(!longUrl){
-      return res.status(400).json({
-        message:"longUrl is required"
-      });
+app.post("/short", async (req, res) => {
+  try {
+    let longUrl = req.body.longUrl;
 
-      
+    console.log("RAW INPUT:", longUrl);
+
+    if (!longUrl || typeof longUrl !== "string") {
+      return res.status(400).json({ message: "URL is required" });
     }
-     if (!/^https?:\/\//i.test(longUrl)) {
+
+    longUrl = longUrl.trim();
+
+    // ✅ GUARANTEED FIX
+    if (!longUrl.startsWith("http://") && !longUrl.startsWith("https://")) {
       longUrl = "https://" + longUrl;
     }
-  
-   shortCode=nanoid(6);
-   await Url.create({
-    shortCode,
-   
-    longUrl
-   });
-   res.json({
-    shortUrl: `${process.env.BASE_URL}/${shortCode}`
-   });
-  }
-  catch(err){
-    console.error(err);
-    res.status(500).json({
-        message:"server error"
+
+    console.log("NORMALIZED:", longUrl);
+
+    const shortCode = nanoid(6);
+
+    await Url.create({
+      shortCode,
+      longUrl
     });
+
+    return res.json({
+      shortUrl: `${process.env.BASE_URL}/${shortCode}`
+    });
+
+  } catch (err) {
+    console.error("SHORT ERROR:", err);
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 app.get("/:code", async (req,res)=>{
     const { code } =req.params;
