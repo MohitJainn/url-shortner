@@ -25,9 +25,10 @@ app.post("/short", async function(req,res){
 
       
     }
-    if (!longUrl.startsWith("http://") && !longUrl.startsWith("https://")) {
-    longUrl = "https://" + longUrl;
-  }
+     if (!/^https?:\/\//i.test(longUrl)) {
+      longUrl = "https://" + longUrl;
+    }
+  
    shortCode=nanoid(6);
    await Url.create({
     shortCode,
