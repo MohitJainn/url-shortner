@@ -16,7 +16,15 @@ mongoose.connect(process.env.MONGO_URL)
 .catch(err=>console.log(err));
 
 app.post("/short", async function(req,res){
-    const {longUrl}=req.body;
+     try{ 
+      const {longUrl}=req.body;
+    if(!longUrl){
+      return res.status(400).json({
+        message:"longUrl is required"
+      });
+
+      
+    }
     if (!longUrl.startsWith("http://") && !longUrl.startsWith("https://")) {
     longUrl = "https://" + longUrl;
   }
@@ -29,6 +37,13 @@ app.post("/short", async function(req,res){
    res.json({
     shortUrl: `${process.env.BASE_URL}/${shortCode}`
    });
+  }
+  catch(err){
+    console.error(err);
+    res.status(500).json({
+        message:"server error"
+    });
+  }
 });
 
 app.get("/:code", async (req,res)=>{
