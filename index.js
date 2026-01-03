@@ -24,7 +24,7 @@ app.post("/short", async function(req,res){
     longUrl
    });
    res.json({
-    shortUrl:`http://localhost:3000/${shortCode}`
+    shortUrl: `${process.env.BASE_URL}/${shortCode}`
    });
 });
 
